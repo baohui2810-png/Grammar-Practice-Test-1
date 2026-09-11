@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn tập Ngữ Pháp: 3 Thì Cơ Bản</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+
+        :root {
+            --primary: #5548cf;
+            --secondary: #8f94fb;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --text-dark: #2c3e50;
+            --text-light: #ffffff;
+            --bg-color: #f4f7f6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--text-light);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1,
+        h2 {
+            color: var(--text-dark);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--danger);
+        }
+
+        .progress {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--text-light);
+        }
+
+        .btn-primary:hover {
+            background: #3c42a5;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: var(--text-light);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: var(--text-light);
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .nav-buttons .btn {
+            width: auto;
+            flex: 1;
+            margin: 0;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .option-label:hover {
+            background: #f8f9fa;
+            border-color: var(--secondary);
+        }
+
+        .option-label input {
+            margin-right: 15px;
+            transform: scale(1.2);
+        }
+
+        .option-label.selected {
+            border-color: var(--primary);
+            background: #eef0ff;
+        }
+
+        .result-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .result-item.correct {
+            border-left: 5px solid var(--success);
+        }
+
+        .result-item.wrong {
+            border-left: 5px solid var(--danger);
+        }
+
+        .correct-answer-text {
+            color: var(--success);
+            font-weight: bold;
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .history-table th,
+        .history-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .history-table th {
+            background: var(--primary);
+            color: white;
+        }
+
+        #result-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div id="screen-welcome" class="screen active">
+            <h1>Ôn Tập Ngữ Pháp 🚀</h1>
+            <p style="text-align: center; margin-bottom: 20px;">25 câu trắc nghiệm: Hiện tại đơn, Hiện tại tiếp diễn,
+                Quá khứ đơn.</p>
+            <div class="input-group">
+                <input type="text" id="username" placeholder="Nhập tên của bạn để bắt đầu" required>
+            </div>
+            <button class="btn btn-primary" onclick="startQuiz()">Bắt đầu làm bài (10 phút)</button>
+            <button class="btn btn-outline" onclick="showHistory()">Xem lịch sử điểm</button>
+        </div>
+
+        <div id="screen-quiz" class="screen">
+            <div class="header-info">
+                <div class="progress">Câu: <span id="current-q-num">1</span>/25</div>
+                <div class="timer">⏳ <span id="time-display">10:00</span></div>
+            </div>
+            <div class="question-text" id="question-text">Đang tải câu hỏi...</div>
+            <div class="options" id="options-container">
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-outline" id="btn-prev" onclick="prevQuestion()">⬅ Quay lại</button>
+                <button class="btn btn-primary" id="btn-next" onclick="nextQuestion()">Tiếp theo ➡</button>
+            </div>
+            <button class="btn btn-success" id="btn-submit" onclick="submitQuiz()"
+                style="display: none; margin-top: 15px;">Nộp bài ngay</button>
+        </div>
+
+        <div id="screen-result" class="screen">
+            <h2>Kết quả của bạn 🎉</h2>
+            <h1 style="color: var(--primary); font-size: 3rem;" id="final-score">0/25</h1>
+            <div id="result-list">
+            </div>
+            <button class="btn btn-primary" onclick="goToHome()">Về trang chủ</button>
+        </div>
+
+        <div id="screen-history" class="screen">
+            <h2>Lịch sử làm bài 📜</h2>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Tên</th>
+                        <th>Điểm</th>
+                        <th>Thời gian</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body">
+                </tbody>
+            </table>
+            <br>
+            <button class="btn btn-outline" onclick="goToHome()">Quay lại</button>
+        </div>
+    </div>
+
+    <script>
+        const questionBank = [
+            { q: "He usually _____ to work by bus.", options: ["go", "goes", "is going", "went"], a: 1 },
+            { q: "Water _____ at 100 degrees Celsius.", options: ["boil", "boils", "is boiling", "boiled"], a: 1 },
+            { q: "They _____ play tennis on Sundays.", options: ["don't", "doesn't", "aren't", "didn't"], a: 0 },
+            { q: "_____ she like reading books?", options: ["Do", "Is", "Does", "Did"], a: 2 },
+            { q: "The earth _____ around the sun.", options: ["moves", "move", "is moving", "moved"], a: 0 },
+            { q: "My father _____ a doctor.", options: ["are", "is", "am", "be"], a: 1 },
+            { q: "I _____ coffee every morning.", options: ["drank", "drinks", "am drinking", "drink"], a: 3 },
+            { q: "Cats _____ catching mice.", options: ["likes", "like", "are liking", "liked"], a: 1 },
+            { q: "How often _____ you go to the gym?", options: ["does", "are", "do", "did"], a: 2 },
+            { q: "The train _____ at 8 AM every day.", options: ["leaves", "leave", "is leaving", "left"], a: 0 },
+
+            { q: "Look! The baby _____.", options: ["sleeps", "sleep", "is sleeping", "slept"], a: 2 },
+            { q: "I can't talk right now, I _____ my homework.", options: ["do", "am doing", "did", "does"], a: 1 },
+            { q: "Listen! Someone _____ at the door.", options: ["knocks", "knock", "is knocking", "knocked"], a: 2 },
+            { q: "They _____ football in the park at the moment.", options: ["are playing", "play", "played", "playing"], a: 0 },
+            { q: "Where is Mom? - She _____ in the kitchen.", options: ["cooks", "cooked", "is cooking", "cook"], a: 2 },
+            { q: "We _____ a movie right now.", options: ["watch", "are watching", "watched", "watches"], a: 1 },
+            { q: "Why _____ you crying?", options: ["do", "did", "are", "is"], a: 2 },
+            { q: "He _____ a blue shirt today.", options: ["wears", "is wearing", "wear", "wore"], a: 1 },
+            { q: "Shh! The students _____ a test.", options: ["take", "takes", "are taking", "took"], a: 2 },
+            { q: "It _____ outside right now, take an umbrella.", options: ["rains", "rained", "is raining", "rain"], a: 2 },
+
+            { q: "I _____ to Paris last summer.", options: ["go", "went", "goes", "am going"], a: 1 },
+            { q: "She _____ me a beautiful gift yesterday.", options: ["gives", "give", "gave", "is giving"], a: 2 },
+            { q: "They _____ pizza for dinner last night.", options: ["eats", "ate", "eat", "are eating"], a: 1 },
+            { q: "_____ you see that movie yesterday?", options: ["Do", "Are", "Did", "Does"], a: 2 },
+            { q: "He _____ at home last weekend.", options: ["stay", "stays", "stayed", "is staying"], a: 2 },
+            { q: "We _____ a lot of photos during the trip.", options: ["took", "takes", "take", "are taking"], a: 0 },
+            { q: "I _____ my keys this morning.", options: ["lose", "lost", "loses", "am losing"], a: 1 },
+            { q: "She _____ understand the lesson yesterday.", options: ["doesn't", "don't", "didn't", "isn't"], a: 2 },
+            { q: "When _____ he arrive?", options: ["does", "did", "do", "is"], a: 1 },
+            { q: "Columbus _____ America in 1492.", options: ["discovers", "is discovering", "discover", "discovered"], a: 3 }
+        ];
+
+        let currentQuiz = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let userName = "";
+        let timeLeft = 600;
+        let timerInterval;
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function startQuiz() {
+            const nameInput = document.getElementById('username').value.trim();
+            if (!nameInput) {
+                alert("Vui lòng nhập tên của bạn!");
+                return;
+            }
+            userName = nameInput;
+
+            currentQuiz = shuffle([...questionBank]).slice(0, 25);
+            userAnswers = new Array(25).fill(null);
+            currentQuestionIndex = 0;
+            timeLeft = 600;
+
+            showScreen('screen-quiz');
+            renderQuestion();
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                submitQuiz();
+                return;
+            }
+            timeLeft--;
+            let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            let s = (timeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('time-display').innerText = `${m}:${s}`;
+        }
+
+        function renderQuestion() {
+            const qData = currentQuiz[currentQuestionIndex];
+            document.getElementById('current-q-num').innerText = currentQuestionIndex + 1;
+            document.getElementById('question-text').innerText = `Câu ${currentQuestionIndex + 1}: ${qData.q}`;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = "";
+
+            qData.options.forEach((opt, index) => {
+                const isChecked = userAnswers[currentQuestionIndex] === index ? "checked" : "";
+                const selectedClass = isChecked ? "selected" : "";
+
+                const html = `
+                <label class="option-label ${selectedClass}" onclick="selectOption(${index}, this)">
+                    <input type="radio" name="option" value="${index}" ${isChecked}>
+                    ${opt}
+                </label>
+            `;
+                optionsContainer.insertAdjacentHTML('beforeend', html);
+            });
+
+            document.getElementById('btn-prev').style.visibility = currentQuestionIndex === 0 ? "hidden" : "visible";
+
+            if (currentQuestionIndex === currentQuiz.length - 1) {
+                document.getElementById('btn-next').style.display = "none";
+                document.getElementById('btn-submit').style.display = "block";
+            } else {
+                document.getElementById('btn-next').style.display = "block";
+                document.getElementById('btn-submit').style.display = "none";
+            }
+        }
+
+        function selectOption(index, labelElement) {
+            userAnswers[currentQuestionIndex] = index;
+            document.querySelectorAll('.option-label').forEach(lbl => lbl.classList.remove('selected'));
+            labelElement.classList.add('selected');
+            labelElement.querySelector('input').checked = true;
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < currentQuiz.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            }
+        }
+
+        function submitQuiz() {
+            clearInterval(timerInterval);
+
+            let score = 0;
+            let resultHTML = "";
+
+            currentQuiz.forEach((q, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === q.a;
+                if (isCorrect) score++;
+
+                const statusClass = isCorrect ? "correct" : "wrong";
+                const userText = userAnswer !== null ? q.options[userAnswer] : "Không trả lời";
+                const correctText = q.options[q.a];
+
+                resultHTML += `
+                <div class="result-item ${statusClass}">
+                    <p><strong>Câu ${index + 1}:</strong> ${q.q}</p>
+                    <p>Bạn chọn: ${userText} ${isCorrect ? '✅' : '❌'}</p>
+                    ${!isCorrect ? `<p class="correct-answer-text">Đáp án đúng: ${correctText}</p>` : ''}
+                </div>
+            `;
+            });
+
+            document.getElementById('final-score').innerText = `${score}/25`;
+            document.getElementById('result-list').innerHTML = resultHTML;
+
+            saveHistory(userName, score);
+            showScreen('screen-result');
+        }
+
+        function saveHistory(name, score) {
+            let history = JSON.parse(localStorage.getItem('quizHistory')) || [];
+            const date = new Date();
+            const dateString = `${date.getHours()}:${date.getMinutes()} - ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+
+            history.push({ name, score, date: dateString });
+            localStorage.setItem('quizHistory', JSON.stringify(history));
+        }
+
+        function showHistory() {
+            const history = JSON.parse(localStorage.getItem('quizHistory')) || [];
+            const tbody = document.getElementById('history-body');
+
+            if (history.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3">Chưa có lịch sử làm bài.</td></tr>`;
+            } else {
+                tbody.innerHTML = history.reverse().map(item => `
+                <tr>
+                    <td>${item.name}</td>
+                    <td><strong>${item.score}/25</strong></td>
+                    <td>${item.date}</td>
+                </tr>
+            `).join('');
+            }
+
+            showScreen('screen-history');
+        }
+
+        function goToHome() {
+            document.getElementById('username').value = "";
+            showScreen('screen-welcome');
+        }
+    </script>
+
+</body>
+
+</html>
